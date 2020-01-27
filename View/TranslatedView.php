@@ -13,7 +13,7 @@ namespace WhiteOctober\PagerfantaBundle\View;
 
 use Pagerfanta\PagerfantaInterface;
 use Pagerfanta\View\ViewInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Translated view.
@@ -81,35 +81,35 @@ abstract class TranslatedView implements ViewInterface
         return array_merge($options, array($option => $message));
     }
 
-    abstract protected function previousMessageOption();
+    abstract protected function previousMessageOption(): string;
 
-    abstract protected function nextMessageOption();
+    abstract protected function nextMessageOption(): string;
 
-    private function previousMessage()
+    private function previousMessage(): string
     {
         $previousText = $this->previousText();
 
         return $this->buildPreviousMessage($previousText);
     }
 
-    private function nextMessage()
+    private function nextMessage(): string
     {
         $nextText = $this->nextText();
 
         return $this->buildNextMessage($nextText);
     }
 
-    private function previousText()
+    private function previousText(): string
     {
         return $this->translator->trans('previous', array(), 'pagerfanta');
     }
 
-    private function nextText()
+    private function nextText(): string
     {
         return $this->translator->trans('next', array(), 'pagerfanta');
     }
 
-    abstract protected function buildPreviousMessage($text);
+    abstract protected function buildPreviousMessage($text): string;
 
-    abstract protected function buildNextMessage($text);
+    abstract protected function buildNextMessage($text): string;
 }

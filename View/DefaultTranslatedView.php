@@ -20,22 +20,22 @@ namespace WhiteOctober\PagerfantaBundle\View;
  */
 class DefaultTranslatedView extends TranslatedView
 {
-    protected function previousMessageOption()
+    protected function previousMessageOption(): string
     {
         return 'prev_message';
     }
 
-    protected function nextMessageOption()
+    protected function nextMessageOption(): string
     {
         return 'next_message';
     }
 
-    protected function buildPreviousMessage($text)
+    protected function buildPreviousMessage($text): string
     {
         return sprintf('&#171; %s', $text);
     }
 
-    protected function buildNextMessage($text)
+    protected function buildNextMessage($text): string
     {
         return sprintf('%s &#187;', $text);
     }
@@ -43,7 +43,7 @@ class DefaultTranslatedView extends TranslatedView
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'default_translated';
     }

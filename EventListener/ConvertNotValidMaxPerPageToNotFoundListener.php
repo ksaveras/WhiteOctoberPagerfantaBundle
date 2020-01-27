@@ -1,44 +1,35 @@
 <?php
-namespace  WhiteOctober\PagerfantaBundle\EventListener;
+
+namespace WhiteOctober\PagerfantaBundle\EventListener;
 
 use Pagerfanta\Exception\NotValidMaxPerPageException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ConvertNotValidMaxPerPageToNotFoundListener implements EventSubscriberInterface
 {
     /**
-     * @param GetResponseForExceptionEvent $event
+     * {@inheritdoc}
      */
-    public function onException(GetResponseForExceptionEvent $event)
+    public static function getSubscribedEvents(): array
     {
-        if (method_exists($event, 'getThrowable')) {
-            $throwable = $event->getThrowable();
-        } else {
-            // Support for Symfony 4.3 and before
-            $throwable = $event->getException();
-        }
-
-        if ($throwable instanceof NotValidMaxPerPageException) {
-            $notFoundHttpException = new NotFoundHttpException('Page Not Found', $throwable);
-            if (method_exists($event, 'setThrowable')) {
-                $event->setThrowable($notFoundHttpException);
-            } else {
-                // Support for Symfony 4.3 and before
-                $event->setException($notFoundHttpException);
-            }
-        }
+        return [
+            KernelEvents::EXCEPTION => ['onException', 512],
+        ];
     }
 
     /**
-     * {@inheritDoc}
+     * @param ExceptionEvent $event
      */
-    public static function getSubscribedEvents()
+    public function onException(ExceptionEvent $event): void
     {
-        return array(
-            KernelEvents::EXCEPTION => array('onException', 512)
-        );
+        $throwable = $event->getThrowable();
+
+        if ($throwable instanceof NotValidMaxPerPageException) {
+            $notFoundHttpException = new NotFoundHttpException('Page Not Found', $throwable);
+            $event->setThrowable($notFoundHttpException);
+        }
     }
 }

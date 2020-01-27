@@ -58,7 +58,7 @@ class WhiteOctoberPagerfantaExtension extends Extension
             $container
                 ->getDefinition('twig.extension.pagerfanta')
                 ->addMethodCall('setRequest', array(
-                    new Reference('request', ContainerInterface::NULL_ON_INVALID_REFERENCE, false),
+                    new Reference('request', ContainerInterface::NULL_ON_INVALID_REFERENCE),
                 ))
             ;
         }

@@ -30,7 +30,7 @@ class AddPagerfantasPass implements CompilerPassInterface
 
         $views = array();
         foreach ($container->findTaggedServiceIds('pagerfanta.view') as $serviceId => $arguments) {
-            $alias = isset($arguments[0]['alias']) ? $arguments[0]['alias'] : $serviceId;
+            $alias = $arguments[0]['alias'] ?? $serviceId;
 
             $views[$alias] = new Reference($serviceId);
         }

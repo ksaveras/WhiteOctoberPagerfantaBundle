@@ -21,7 +21,7 @@ class TwitterBootstrap3TranslatedView extends TwitterBootstrapTranslatedView
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'twitter_bootstrap3_translated';
     }

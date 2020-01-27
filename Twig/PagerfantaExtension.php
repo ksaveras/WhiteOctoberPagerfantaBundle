@@ -29,13 +29,21 @@ use Twig\TwigFunction;
 class PagerfantaExtension extends AbstractExtension
 {
     private $defaultView;
+
     private $viewFactory;
+
     private $router;
+
     private $requestStack;
+
     private $request;
 
-    public function __construct($defaultView, ViewFactory $viewFactory, UrlGeneratorInterface $router, RequestStack $requestStack = null)
-    {
+    public function __construct(
+        $defaultView,
+        ViewFactory $viewFactory,
+        UrlGeneratorInterface $router,
+        RequestStack $requestStack = null
+    ) {
         $this->defaultView = $defaultView;
         $this->viewFactory = $viewFactory;
         $this->router = $router;
@@ -47,10 +55,10 @@ class PagerfantaExtension extends AbstractExtension
      */
     public function getFunctions()
     {
-        return array(
-            new TwigFunction('pagerfanta', array($this, 'renderPagerfanta'), array('is_safe' => array('html'))),
-            new TwigFunction('pagerfanta_page_url', array($this, 'getPageUrl')),
-        );
+        return [
+            new TwigFunction('pagerfanta', [$this, 'renderPagerfanta'], ['is_safe' => ['html']]),
+            new TwigFunction('pagerfanta_page_url', [$this, 'getPageUrl']),
+        ];
     }
 
     /**
@@ -62,10 +70,10 @@ class PagerfantaExtension extends AbstractExtension
      *
      * @return string The pagerfanta rendered.
      */
-    public function renderPagerfanta(PagerfantaInterface $pagerfanta, $viewName = null, array $options = array())
+    public function renderPagerfanta(PagerfantaInterface $pagerfanta, $viewName = null, array $options = []): string
     {
         if (is_array($viewName)) {
-            list($viewName, $options) = array(null, $viewName);
+            [$viewName, $options] = [null, $viewName];
         }
 
         $viewName = $viewName ?: $this->defaultView;
@@ -78,15 +86,15 @@ class PagerfantaExtension extends AbstractExtension
     /**
      * Generates the url for a given page in a pagerfanta instance.
      *
-     * @param \Pagerfanta\PagerfantaInterface $pagerfanta
-     * @param $page
-     * @param array $options
+     * @param PagerfantaInterface $pagerfanta
+     * @param mixed               $page
+     * @param array               $options
      *
      * @return string The url of the given page
      *
      * @throws \InvalidArgumentException
      */
-    public function getPageUrl(PagerfantaInterface $pagerfanta, $page, array $options = array())
+    public function getPageUrl(PagerfantaInterface $pagerfanta, $page, array $options = []): string
     {
         if ($page < 0 || $page > $pagerfanta->getNbPages()) {
             throw new \InvalidArgumentException("Page '{$page}' is out of bounds");
@@ -95,6 +103,19 @@ class PagerfantaExtension extends AbstractExtension
         $routeGenerator = $this->createRouteGenerator($options);
 
         return $routeGenerator($page);
+    }
+
+    public function setRequest(Request $request = null): void
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'pagerfanta';
     }
 
     /**
@@ -106,14 +127,17 @@ class PagerfantaExtension extends AbstractExtension
      *
      * @throws \Exception
      */
-    private function createRouteGenerator($options = array())
+    private function createRouteGenerator($options = []): callable
     {
-        $options = array_replace(array(
-                'routeName'     => null,
-                'routeParams'   => array(),
+        $options = array_replace(
+            [
+                'routeName' => null,
+                'routeParams' => [],
                 'pageParameter' => '[page]',
-                'omitFirstPage' => false
-            ), $options);
+                'omitFirstPage' => false,
+            ],
+            $options
+        );
 
         $router = $this->router;
 
@@ -126,7 +150,7 @@ class PagerfantaExtension extends AbstractExtension
             }
 
             // make sure we read the route parameters from the passed option array
-            $defaultRouteParams = array_merge($request->query->all(), $request->attributes->get('_route_params', array()));
+            $defaultRouteParams = array_merge($request->query->all(), $request->attributes->get('_route_params', []));
 
             if (array_key_exists('routeParams', $options)) {
                 $options['routeParams'] = array_merge($defaultRouteParams, $options['routeParams']);
@@ -140,9 +164,9 @@ class PagerfantaExtension extends AbstractExtension
         $pagePropertyPath = new PropertyPath($options['pageParameter']);
         $omitFirstPage = $options['omitFirstPage'];
 
-        return function($page) use($router, $routeName, $routeParams, $pagePropertyPath, $omitFirstPage) {
+        return function ($page) use ($router, $routeName, $routeParams, $pagePropertyPath, $omitFirstPage) {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
-            if($omitFirstPage){
+            if ($omitFirstPage) {
                 $propertyAccessor->setValue($routeParams, $pagePropertyPath, $page > 1 ? $page : null);
             } else {
                 $propertyAccessor->setValue($routeParams, $pagePropertyPath, $page);
@@ -152,28 +176,15 @@ class PagerfantaExtension extends AbstractExtension
         };
     }
 
-    public function setRequest(Request $request = null)
-    {
-        $this->request = $request;
-    }
-
     /**
      * @return Request|null
      */
-    private function getRequest()
+    private function getRequest(): ?Request
     {
         if ($this->requestStack && $request = $this->requestStack->getCurrentRequest()) {
             return $request;
         }
 
         return $this->request;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'pagerfanta';
     }
 }

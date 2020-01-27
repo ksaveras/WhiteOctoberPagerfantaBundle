@@ -2,12 +2,12 @@
 
 namespace WhiteOctober\PagerfantaTestBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\FixedAdapter;
 use Symfony\Component\HttpFoundation\Request;
 
-class PagerfantaController extends Controller
+class PagerfantaController extends AbstractController
 {
     public function defaultViewAction()
     {

@@ -21,7 +21,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-    const EXCEPTION_STRATEGY_TO_HTTP_NOT_FOUND = 'to_http_not_found';
+    public const EXCEPTION_STRATEGY_TO_HTTP_NOT_FOUND = 'to_http_not_found';
 
     /**
      * Generates the configuration tree builder.
@@ -32,12 +32,7 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('white_october_pagerfanta', 'array');
 
-        if (method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            // BC layer for symfony/config 4.1 and older
-            $rootNode = $treeBuilder->root('white_october_pagerfanta', 'array');
-        }
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
