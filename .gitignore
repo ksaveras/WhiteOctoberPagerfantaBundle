@@ -1,5 +1,7 @@
+/.idea/
 composer.lock
 Guardfile
+/.phpunit.result.cache
 phpunit.xml
 /TestsProject/app/cache/
 /TestsProject/app/log/
